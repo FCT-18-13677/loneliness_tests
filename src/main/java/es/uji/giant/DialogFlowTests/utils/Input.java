@@ -1,8 +1,13 @@
 package es.uji.giant.DialogFlowTests.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 public class Input {
+    private static Logger logger = LoggerFactory.getLogger(Input.class);
+
     public static int calculateScore(Map<String, String> params) {
         int sum = 0;
 
@@ -49,8 +54,18 @@ public class Input {
     }
 
     public static boolean isValidAlone(String input) {
-        String[] validAnswers = {"si, no, sí"};
-        return isValid(input.toLowerCase(), validAnswers);
+        String[] validAnswers = {"si", "no", "sí"};
+        return isValid(input, validAnswers);
+    }
+
+    public static boolean isValidJong (String input) {
+        String[] validAnswers = {"si", "no", "más o menos", "sí", "mas o menos"};
+        return isValid(input, validAnswers);
+    }
+
+    public static boolean isValidUCLA (String input) {
+        String[] validAnswers = {"casi nunca", "algunas veces", "a menudo"};
+        return isValid(input, validAnswers);
     }
 
     public static boolean userWantsToCancel(String userInput) {
