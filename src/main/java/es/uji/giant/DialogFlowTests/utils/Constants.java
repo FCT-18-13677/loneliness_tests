@@ -20,4 +20,7 @@ public class Constants {
     public static final String NOT_VALID_ALONE_ANSWER = "Tienes que indicar 'Sí' o 'No'";
     public static final String NOT_VALID_JONG_ANSWER = "Tu respuesta debe ser 'Sí', 'Más o menos' o 'No'";
     public static final String NOT_VALID_UCLA_ANSWER = "Tu respuesta debe ser 'Casi nunca', 'Algunas veces' o 'A menudo'";
+
+    public static final String ELASTICSEARCH_TEST_INDEX = "giant_tests";
+    public static final String ELASTICSEARCH_TEST_TYPE = "tests";
 }

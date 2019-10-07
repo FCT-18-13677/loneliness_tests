@@ -6,10 +6,12 @@ import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2EventI
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookRequest;
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookResponse;
 import es.uji.giant.DialogFlowTests.model.Test;
+import es.uji.giant.DialogFlowTests.repository.TestDao;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 import es.uji.giant.DialogFlowTests.utils.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +29,11 @@ import java.util.Map;
 public class DialogflowController extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private Map<String, Test> activeTests;
+    private TestDao testDao;
 
-    public DialogflowController() {
+    @Autowired
+    public DialogflowController(TestDao testDao) {
+        this.testDao = testDao;
         activeTests = new HashMap<>();
     }
 
@@ -404,9 +409,10 @@ public class DialogflowController extends HttpServlet {
             case 13: if (activeTests.containsKey(sessionId)) {
                         activeTests.get(sessionId).setUserComments(parameter);
                         activeTests.get(sessionId).setTimestamp(System.currentTimeMillis());
-                        //logger.info("Hay que guardar en la base de datos lo siguiente: " + activeTests.get(sessionId));
-                        //TODO Guardar en base de datos
-                    }
+
+                        testDao.insertTest(sessionId, activeTests.get(sessionId));
+
+                        }
                     break;
         }
 
