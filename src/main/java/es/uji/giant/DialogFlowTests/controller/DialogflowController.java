@@ -411,6 +411,7 @@ public class DialogflowController extends HttpServlet {
                         activeTests.get(sessionId).setTimestamp(System.currentTimeMillis());
 
                         testDao.insertTest(sessionId, activeTests.get(sessionId));
+                        activeTests.remove(sessionId);
 
                         }
                     break;
