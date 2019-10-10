@@ -1,10 +1,7 @@
 package es.uji.giant.DialogFlowTests.controller;
 
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2EventInput;
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookRequest;
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookResponse;
+import com.google.api.services.dialogflow.v2.model.*;
 import es.uji.giant.DialogFlowTests.model.Test;
 import es.uji.giant.DialogFlowTests.repository.TestDao;
 import es.uji.giant.DialogFlowTests.utils.Constants;
@@ -20,10 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class DialogflowController extends HttpServlet {
@@ -58,6 +52,7 @@ public class DialogflowController extends HttpServlet {
             String session = request.getSession();
             logger.info("Active Session: " + session);
 
+            //logger.info("Request: " + request.toString());
             // Check intent
             switch (activeIntent) {
                 case Constants.SEX_INTENT:  parameter = String.valueOf(parameters.get("sex"));
@@ -293,6 +288,18 @@ public class DialogflowController extends HttpServlet {
 
             // Response
             response.setFulfillmentText(output);
+            // Esta línea, entre otras cosas, añade las "Suggestion Chips de Google") y añade el output (si no se ñade de esta forma no es suficiente con la
+            // línea anterior.
+            response.setFulfillmentMessages(request.getQueryResult().getFulfillmentMessages());
+            // Output especial Google Asistant
+            response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getText().setText(new ArrayList<>(Arrays.asList(output)));
+
+            // Output especial para Telegram / voz
+            if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
+                response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
+                response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
+            }
+
             if (thereIsContext)
                 response.setOutputContexts(new ArrayList<>(Arrays.asList(outputContext)));
             if (thereIsEvent)

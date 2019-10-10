@@ -42,15 +42,25 @@ public class Input {
     }
 
     public static boolean isValidAge(String input) {
-        try {
+        if (isNumeric(input)) {
             int age = Integer.valueOf(input);
             if (age >= 18 && age <= 105) {
                 return true;
             }
             return false;
-        } catch (Exception e) {
+        } else {
             return false;
         }
+    }
+
+    public static boolean isNumeric(String input)
+    {
+        for (char c : input.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean isValidAlone(String input) {
