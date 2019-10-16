@@ -54,231 +54,152 @@ public class DialogflowController extends HttpServlet {
 
             //logger.info("Request: " + request.toString());
             // Check intent
-            switch (activeIntent) {
-                case Constants.SEX_INTENT:  parameter = String.valueOf(parameters.get("sex"));
-                                            if (!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidSex(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 1);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 1);
-                                                    output = Constants.NOT_VALID_SEX_ANSWER;
-                                                }
 
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+            parameter = String.valueOf(parameters.get("val"));
+            if (!Input.userWantsToCancel(parameter) || activeIntent.equals(Constants.USER_COMMENT_INTENT)) {
+                switch (activeIntent) {
+                    case Constants.SEX_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidSex(parameter)) {
+                            outputContext = fillInformation(parameter, session, 1);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 1);
+                            output = Constants.NOT_VALID_SEX_ANSWER;
+                        }
+                        break;
 
-                case Constants.AGE_INTENT:  parameter = String.valueOf(parameters.get("age"));
-                                            if (!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidAge(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 2);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 2);
-                                                    output = Constants.NOT_VALID_AGE_ANSWER;
-                                                }
+                    case Constants.AGE_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidAge(parameter) || parameter.toLowerCase().equals("prefiero no contestar")) {
+                            outputContext = fillInformation(parameter, session, 2);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 2);
+                            output = Constants.NOT_VALID_AGE_ANSWER;
+                        }
+                        break;
 
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.ALONE_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidAlone(parameter)) {
+                            outputContext = fillInformation(parameter, session, 3);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 3);
+                            output = Constants.NOT_VALID_ALONE_ANSWER;
+                        }
+                        break;
 
-                case Constants.ALONE_INTENT:parameter = String.valueOf(parameters.get("alone"));
-                                            if (!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidAlone(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 3);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 3);
-                                                    output = Constants.NOT_VALID_ALONE_ANSWER;
-                                                }
+                    case Constants.JONG1_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 4);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 4);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.JONG2_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 5);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 5);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG1_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 4);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 4);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.JONG3_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 6);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 6);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG2_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 5);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 5);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.JONG4_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 7);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 7);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG3_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 6);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 6);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.JONG5_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 8);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 8);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG4_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 7);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 7);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.JONG6_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidJong(parameter)) {
+                            outputContext = fillInformation(parameter, session, 9);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 9);
+                            output = Constants.NOT_VALID_JONG_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG5_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 8);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 8);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.UCLA1_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidUCLA(parameter)) {
+                            outputContext = fillInformation(parameter, session, 10);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 10);
+                            output = Constants.NOT_VALID_UCLA_ANSWER;
+                        }
+                        break;
 
-                case Constants.JONG6_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidJong(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 9);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 9);
-                                                    output = Constants.NOT_VALID_JONG_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.UCLA2_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidUCLA(parameter)) {
+                            outputContext = fillInformation(parameter, session, 11);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 11);
+                            output = Constants.NOT_VALID_UCLA_ANSWER;
+                        }
+                        break;
 
-                case Constants.UCLA1_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidUCLA(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 10);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 10);
-                                                    output = Constants.NOT_VALID_UCLA_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
+                    case Constants.UCLA3_INTENT:
+                        thereIsContext = true;
+                        if (Input.isValidUCLA(parameter)) {
+                            outputContext = fillInformation(parameter, session, 12);
+                            output = request.getQueryResult().getFulfillmentText();
+                        } else {
+                            outputContext = returnContext(session, 12);
+                            output = Constants.NOT_VALID_UCLA_ANSWER;
+                        }
+                        break;
 
-                case Constants.UCLA2_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidUCLA(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 11);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 11);
-                                                    output = Constants.NOT_VALID_UCLA_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
-
-                case Constants.UCLA3_INTENT:parameter = String.valueOf(parameters.get("val"));
-                                            if(!Input.userWantsToCancel(parameter)) {
-                                                thereIsContext = true;
-                                                if (Input.isValidUCLA(parameter)) {
-                                                    outputContext = fillInformation(parameter, session, 12);
-                                                    output = request.getQueryResult().getFulfillmentText();
-                                                } else {
-                                                    outputContext = returnContext(session, 12);
-                                                    output = Constants.NOT_VALID_UCLA_ANSWER;
-                                                }
-                                            } else {
-                                                thereIsEvent = true;
-                                                output = "Operación cancelada... ¿En que te puedo ayudar?";
-                                                eventInput = new GoogleCloudDialogflowV2EventInput();
-                                                eventInput.setName("Welcome");
-                                                logger.info("El usuario ha cancelado la conversación");
-                                            } break;
-
-                case Constants.USER_COMMENT_INTENT:
-                                            parameter = request.getQueryResult().getQueryText();
-                                            outputContext = fillInformation(parameter, session, 13);
-                                            output = "Muchas gracias, hemos terminado!";
-                                            break;
+                    case Constants.USER_COMMENT_INTENT:
+                        parameter = request.getQueryResult().getQueryText();
+                        outputContext = fillInformation(parameter, session, 13);
+                        output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
+                        break;
+                }
+            } else {
+                thereIsEvent = true;
+                output = Constants.CANCEL_CONVERSATION_OUTPUT;
+                eventInput = sendToWelcomeIntent(session);
             }
 
             logger.info("\n\nActive Test");
@@ -334,7 +255,10 @@ public class DialogflowController extends HttpServlet {
                     break;
 
             case 2: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).setAge(Integer.valueOf(parameter));
+                        // Guarda la edad. Si el usuario no lo ha especificado, la edad será "0".
+                        if (!parameter.toLowerCase().equals("prefiero no contestar")) {
+                            activeTests.get(sessionId).setAge(Integer.valueOf(parameter));
+                        }
                     }
 
                     outputContext.setName(session + "/contexts/solo");
@@ -416,7 +340,6 @@ public class DialogflowController extends HttpServlet {
             case 13: if (activeTests.containsKey(sessionId)) {
                         activeTests.get(sessionId).setUserComments(parameter);
                         activeTests.get(sessionId).setTimestamp(System.currentTimeMillis());
-
                         testDao.insertTest(sessionId, activeTests.get(sessionId));
                         activeTests.remove(sessionId);
 
@@ -472,5 +395,14 @@ public class DialogflowController extends HttpServlet {
         }
 
         return outputContext;
+    }
+
+    private GoogleCloudDialogflowV2EventInput sendToWelcomeIntent(String session) {
+        String sessionId = session.split("/")[4];
+        GoogleCloudDialogflowV2EventInput eventInput = new GoogleCloudDialogflowV2EventInput();
+        eventInput.setName("Welcome");
+        activeTests.remove(sessionId);
+        logger.info("El usuario ha cancelado la conversación");
+        return eventInput;
     }
 }
