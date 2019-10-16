@@ -2,8 +2,10 @@ package es.uji.giant.DialogFlowTests.controller;
 
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2.model.*;
+import es.uji.giant.DialogFlowTests.listener.ClearMapListener;
 import es.uji.giant.DialogFlowTests.model.Test;
 import es.uji.giant.DialogFlowTests.repository.TestDao;
+import es.uji.giant.DialogFlowTests.service.ClearActiveTestService;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 import es.uji.giant.DialogFlowTests.utils.Input;
 import org.slf4j.Logger;
@@ -20,14 +22,18 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
-public class DialogflowController extends HttpServlet {
+public class DialogflowController extends HttpServlet implements ClearMapListener {
+    private static DialogflowController instance;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private Map<String, Test> activeTests;
     private TestDao testDao;
+    private ClearActiveTestService service;
 
     @Autowired
-    public DialogflowController(TestDao testDao) {
+    public DialogflowController(TestDao testDao, ClearActiveTestService service) {
         this.testDao = testDao;
+        this.service = service;
+        service.setListener(this);
         activeTests = new HashMap<>();
     }
 
@@ -402,7 +408,15 @@ public class DialogflowController extends HttpServlet {
         GoogleCloudDialogflowV2EventInput eventInput = new GoogleCloudDialogflowV2EventInput();
         eventInput.setName("Welcome");
         activeTests.remove(sessionId);
+        logger.info("Sesión a borrar -> " + sessionId);
         logger.info("El usuario ha cancelado la conversación");
         return eventInput;
+    }
+
+    @Override
+    public void clearMap() {
+        for (String string : activeTests.keySet()) {
+            activeTests.remove(string);
+        }
     }
 }
