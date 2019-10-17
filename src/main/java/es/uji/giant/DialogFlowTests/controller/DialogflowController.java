@@ -3,6 +3,8 @@ package es.uji.giant.DialogFlowTests.controller;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2.model.*;
 import es.uji.giant.DialogFlowTests.listener.ClearMapListener;
+import es.uji.giant.DialogFlowTests.model.Intent;
+import es.uji.giant.DialogFlowTests.model.IntentFactory;
 import es.uji.giant.DialogFlowTests.model.Questionnarie;
 import es.uji.giant.DialogFlowTests.repository.QuestionnarieDao;
 import es.uji.giant.DialogFlowTests.service.ClearActiveQuestionnarieService;
@@ -26,11 +28,13 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private Map<String, Questionnarie> activeQuestionnaries;
     private QuestionnarieDao questionnarieDao;
+    private IntentFactory factory;
     private ClearActiveQuestionnarieService service;
 
     @Autowired
     public DialogflowController(QuestionnarieDao questionnarieDao, ClearActiveQuestionnarieService service) {
         this.questionnarieDao = questionnarieDao;
+        factory = new IntentFactory();
         this.service = service;
         service.setListener(this);
         activeQuestionnaries = new HashMap<>();
@@ -51,72 +55,28 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             boolean thereIsEvent = false;
             Map<String, Object> parameters = request.getQueryResult().getParameters();      // Get parameters sent
             String activeIntent = request.getQueryResult().getIntent().getDisplayName();    // Get activeIntent name
+            parameter = String.valueOf(parameters.get("val"));
 
             // Check session.
             logger.info("Active Intent: " + activeIntent);
             String session = request.getSession();
             logger.info("Active Session: " + session);
 
-            //logger.info("Request: " + request.toString());
-            // Check intent
-
-            parameter = String.valueOf(parameters.get("val"));
+            Intent actualIntent = factory.getIntent(activeIntent);
             if (!Input.userWantsToCancel(parameter) || activeIntent.equals(Constants.USER_COMMENT_INTENT)) {
+                thereIsContext = true;
+                if (actualIntent.isValidInput(parameter)) {
+                    outputContext = actualIntent.fillInformation(activeQuestionnaries, parameter, session);
+                    output = request.getQueryResult().getFulfillmentText();
+                } else {
+                    outputContext = actualIntent.returnContext(session);
+                    output = actualIntent.getWrongOutput();
+                }
+
+
+
                 switch (activeIntent) {
-                    case Constants.SEX_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidSex(parameter)) {
-                            outputContext = fillInformation(parameter, session, 1);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 1);
-                            output = Constants.NOT_VALID_SEX_ANSWER;
-                        }
-                        break;
 
-                    case Constants.AGE_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidAge(parameter) || parameter.toLowerCase().equals("prefiero no contestar")) {
-                            outputContext = fillInformation(parameter, session, 2);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 2);
-                            output = Constants.NOT_VALID_AGE_ANSWER;
-                        }
-                        break;
-
-                    case Constants.ALONE_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidAlone(parameter)) {
-                            outputContext = fillInformation(parameter, session, 3);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 3);
-                            output = Constants.NOT_VALID_ALONE_ANSWER;
-                        }
-                        break;
-
-                    case Constants.JONG1_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 4);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 4);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
-
-                    case Constants.JONG2_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 5);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 5);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
 
                     case Constants.JONG3_INTENT:
                         thereIsContext = true;
@@ -220,7 +180,7 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             // Output especial Google Asistant
             response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getText().setText(new ArrayList<>(Arrays.asList(output)));
 
-            // Output especial para Telegram / voz
+            // Output especial para Telegram / voz de Google Assistant
             if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
@@ -248,47 +208,6 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
         outputContext.setLifespanCount(lifespan);
 
         switch (typeOfInformation) {
-            case 1: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).setSex(parameter);
-                    } else {
-                        Questionnarie questionnarie = new Questionnarie();
-                        questionnarie.setSex(parameter.toLowerCase());
-                        activeQuestionnaries.put(sessionId, questionnarie);
-                    }
-
-                    outputContext.setName(session + "/contexts/age");
-                    break;
-
-            case 2: if (activeQuestionnaries.containsKey(sessionId)) {
-                        // Guarda la edad. Si el usuario no lo ha especificado, la edad será "0".
-                        if (!parameter.toLowerCase().equals("prefiero no contestar")) {
-                            activeQuestionnaries.get(sessionId).setAge(Integer.valueOf(parameter));
-                        }
-                    }
-
-                    outputContext.setName(session + "/contexts/solo");
-                    break;
-
-            case 3: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
-                    }
-
-                    outputContext.setName(session + "/contexts/val1");
-                    break;
-
-            case 4: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val2");
-                    break;
-
-            case 5: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val3");
-                    break;
 
             case 6: if (activeQuestionnaries.containsKey(sessionId)) {
                         activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
@@ -361,20 +280,6 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
         outputContext.setLifespanCount(lifespan);
 
         switch (typeOfInformation) {
-            case 1: outputContext.setName(session + "/contexts/sex");
-                    break;
-
-            case 2: outputContext.setName(session + "/contexts/age");
-                    break;
-
-            case 3: outputContext.setName(session + "/contexts/solo");
-                    break;
-
-            case 4: outputContext.setName(session + "/contexts/val1");
-                    break;
-
-            case 5: outputContext.setName(session + "/contexts/val2");
-                    break;
 
             case 6: outputContext.setName(session + "/contexts/val3");
                     break;
