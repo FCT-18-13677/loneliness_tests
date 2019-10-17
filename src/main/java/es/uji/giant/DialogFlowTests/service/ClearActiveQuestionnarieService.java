@@ -7,11 +7,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClearActiveTestService {
+public class ClearActiveQuestionnarieService {
     private ClearMapListener listener;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public ClearActiveTestService () {
+    public ClearActiveQuestionnarieService() {
         listener = null;
     }
 

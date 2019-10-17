@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Test {
+public class Questionnarie {
     private String sex;
     private int age;
     private boolean liveAlone;
@@ -16,7 +16,7 @@ public class Test {
     private String diagnosis;
     private List<String> answers;
 
-    public Test() {
+    public Questionnarie() {
         answers = new ArrayList<>();
     }
 
@@ -103,7 +103,7 @@ public class Test {
 
     @Override
     public String toString() {
-        return "Test{" +
+        return "Questionnarie{" +
                 "sex='" + sex + '\'' +
                 ", age=" + age +
                 ", liveAlone=" + liveAlone +

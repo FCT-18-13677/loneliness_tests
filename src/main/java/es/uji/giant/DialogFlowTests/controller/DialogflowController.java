@@ -3,9 +3,9 @@ package es.uji.giant.DialogFlowTests.controller;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2.model.*;
 import es.uji.giant.DialogFlowTests.listener.ClearMapListener;
-import es.uji.giant.DialogFlowTests.model.Test;
-import es.uji.giant.DialogFlowTests.repository.TestDao;
-import es.uji.giant.DialogFlowTests.service.ClearActiveTestService;
+import es.uji.giant.DialogFlowTests.model.Questionnarie;
+import es.uji.giant.DialogFlowTests.repository.QuestionnarieDao;
+import es.uji.giant.DialogFlowTests.service.ClearActiveQuestionnarieService;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 import es.uji.giant.DialogFlowTests.utils.Input;
 import org.slf4j.Logger;
@@ -24,16 +24,16 @@ import java.util.*;
 @RestController
 public class DialogflowController extends HttpServlet implements ClearMapListener {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Map<String, Test> activeTests;
-    private TestDao testDao;
-    private ClearActiveTestService service;
+    private Map<String, Questionnarie> activeQuestionnaries;
+    private QuestionnarieDao questionnarieDao;
+    private ClearActiveQuestionnarieService service;
 
     @Autowired
-    public DialogflowController(TestDao testDao, ClearActiveTestService service) {
-        this.testDao = testDao;
+    public DialogflowController(QuestionnarieDao questionnarieDao, ClearActiveQuestionnarieService service) {
+        this.questionnarieDao = questionnarieDao;
         this.service = service;
         service.setListener(this);
-        activeTests = new HashMap<>();
+        activeQuestionnaries = new HashMap<>();
     }
 
     @PostMapping("/dialogflow")
@@ -207,8 +207,8 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
                 eventInput = sendToWelcomeIntent(session);
             }
 
-            logger.info("\n\nActive Test");
-            for (Map.Entry<String, Test> entry : activeTests.entrySet()) {
+            logger.info("\n\nActive Questionnarie");
+            for (Map.Entry<String, Questionnarie> entry : activeQuestionnaries.entrySet()) {
                 logger.info(entry.getKey() + ": " + entry.getValue());
             }
 
@@ -248,105 +248,105 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
         outputContext.setLifespanCount(lifespan);
 
         switch (typeOfInformation) {
-            case 1: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).setSex(parameter);
+            case 1: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).setSex(parameter);
                     } else {
-                        Test test = new Test();
-                        test.setSex(parameter.toLowerCase());
-                        activeTests.put(sessionId, test);
+                        Questionnarie questionnarie = new Questionnarie();
+                        questionnarie.setSex(parameter.toLowerCase());
+                        activeQuestionnaries.put(sessionId, questionnarie);
                     }
 
                     outputContext.setName(session + "/contexts/age");
                     break;
 
-            case 2: if (activeTests.containsKey(sessionId)) {
+            case 2: if (activeQuestionnaries.containsKey(sessionId)) {
                         // Guarda la edad. Si el usuario no lo ha especificado, la edad será "0".
                         if (!parameter.toLowerCase().equals("prefiero no contestar")) {
-                            activeTests.get(sessionId).setAge(Integer.valueOf(parameter));
+                            activeQuestionnaries.get(sessionId).setAge(Integer.valueOf(parameter));
                         }
                     }
 
                     outputContext.setName(session + "/contexts/solo");
                     break;
 
-            case 3: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
+            case 3: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
                     }
 
                     outputContext.setName(session + "/contexts/val1");
                     break;
 
-            case 4: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 4: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val2");
                     break;
 
-            case 5: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 5: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val3");
                     break;
 
-            case 6: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 6: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val4");
                     break;
 
-            case 7: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 7: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val5");
                     break;
 
-            case 8: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 8: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val6");
                     break;
 
-            case 9: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 9: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val7");
                     break;
 
-            case 10: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 10: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val8");
                     break;
 
-            case 11: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
+            case 11: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
                     }
 
                     outputContext.setName(session + "/contexts/val9");
                     break;
 
-            case 12: if(activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).addAnswer(parameter.toLowerCase());
-                        activeTests.get(sessionId).calculateJongScore();
-                        activeTests.get(sessionId).calculateUCLAScore();
-                        activeTests.get(sessionId).createDiagnosis();
+            case 12: if(activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
+                        activeQuestionnaries.get(sessionId).calculateJongScore();
+                        activeQuestionnaries.get(sessionId).calculateUCLAScore();
+                        activeQuestionnaries.get(sessionId).createDiagnosis();
                     }
 
                     outputContext.setName(session + "/contexts/user_comment");
                     break;
 
-            case 13: if (activeTests.containsKey(sessionId)) {
-                        activeTests.get(sessionId).setUserComments(parameter);
-                        activeTests.get(sessionId).setTimestamp(System.currentTimeMillis());
-                        testDao.insertTest(sessionId, activeTests.get(sessionId));
-                        activeTests.remove(sessionId);
+            case 13: if (activeQuestionnaries.containsKey(sessionId)) {
+                        activeQuestionnaries.get(sessionId).setUserComments(parameter);
+                        activeQuestionnaries.get(sessionId).setTimestamp(System.currentTimeMillis());
+                        questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId));
+                        activeQuestionnaries.remove(sessionId);
 
                         }
                     break;
@@ -406,7 +406,7 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
         String sessionId = session.split("/")[4];
         GoogleCloudDialogflowV2EventInput eventInput = new GoogleCloudDialogflowV2EventInput();
         eventInput.setName("Welcome");
-        activeTests.remove(sessionId);
+        activeQuestionnaries.remove(sessionId);
         logger.info("Sesión a borrar -> " + sessionId);
         logger.info("El usuario ha cancelado la conversación");
         return eventInput;
@@ -415,8 +415,8 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
     @Override
     public void clearMap() {
         logger.info("\nEmpezando a borrar:");
-        for (String string : activeTests.keySet()) {
-            logger.info(activeTests.remove(string).toString());
+        for (String string : activeQuestionnaries.keySet()) {
+            logger.info(activeQuestionnaries.remove(string).toString());
         }
     }
 }
