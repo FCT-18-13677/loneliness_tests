@@ -23,7 +23,6 @@ import java.util.*;
 
 @RestController
 public class DialogflowController extends HttpServlet implements ClearMapListener {
-    private static DialogflowController instance;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private Map<String, Test> activeTests;
     private TestDao testDao;
@@ -415,8 +414,9 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
 
     @Override
     public void clearMap() {
+        logger.info("\nEmpezando a borrar:");
         for (String string : activeTests.keySet()) {
-            activeTests.remove(string);
+            logger.info(activeTests.remove(string).toString());
         }
     }
 }
