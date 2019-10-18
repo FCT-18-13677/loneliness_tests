@@ -1,0 +1,43 @@
+package es.uji.giant.DialogFlowTests.model;
+
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import es.uji.giant.DialogFlowTests.utils.Constants;
+
+import java.util.Map;
+
+public class Jong4Intent extends Intent {
+
+    private GoogleCloudDialogflowV2Context outputContext;
+
+    Jong4Intent () {
+        outputContext = new GoogleCloudDialogflowV2Context();
+        outputContext.setLifespanCount(1);
+    }
+
+    @Override
+    public boolean isValidInput(String input) {
+        String[] validAnswers = {"si", "no", "más o menos", "sí", "mas o menos"};
+        return isValid(input, validAnswers);
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
+        String sessionId = session.split("/")[4];
+        if (activeQuestionnaries.containsKey(sessionId)) {
+            activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
+        }
+        outputContext.setName(session + "/contexts/val5");
+        return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2Context returnContext(String session) {
+        outputContext.setName(session + "/contexts/val4");
+        return outputContext;
+    }
+
+    @Override
+    public String getWrongOutput() {
+        return Constants.NOT_VALID_JONG_ANSWER;
+    }
+}

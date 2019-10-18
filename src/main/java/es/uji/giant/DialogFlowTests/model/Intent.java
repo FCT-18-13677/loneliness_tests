@@ -19,4 +19,12 @@ public abstract class Intent {
         }
         return false;
     }
+
+    public boolean userWantsToCancel(String userInput) {
+        boolean cancel = false;
+        if (userInput.equals("cancel") || userInput.equals("cancelar")) {
+            cancel = true;
+        }
+        return cancel;
+    }
 }

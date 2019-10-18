@@ -9,7 +9,6 @@ import es.uji.giant.DialogFlowTests.model.Questionnarie;
 import es.uji.giant.DialogFlowTests.repository.QuestionnarieDao;
 import es.uji.giant.DialogFlowTests.service.ClearActiveQuestionnarieService;
 import es.uji.giant.DialogFlowTests.utils.Constants;
-import es.uji.giant.DialogFlowTests.utils.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +59,12 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             // Check session.
             logger.info("Active Intent: " + activeIntent);
             String session = request.getSession();
+            String sessionId = session.split("/")[4];
             logger.info("Active Session: " + session);
 
             Intent actualIntent = factory.getIntent(activeIntent);
-            if (!Input.userWantsToCancel(parameter) || activeIntent.equals(Constants.USER_COMMENT_INTENT)) {
+
+            if (!actualIntent.userWantsToCancel(parameter) && !activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // El usuario no quiere cancelar y no es el último intent...
                 thereIsContext = true;
                 if (actualIntent.isValidInput(parameter)) {
                     outputContext = actualIntent.fillInformation(activeQuestionnaries, parameter, session);
@@ -73,95 +74,14 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
                     output = actualIntent.getWrongOutput();
                 }
 
+            } else if (activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // Último Intent
+                parameter = request.getQueryResult().getQueryText();
+                actualIntent.fillInformation(activeQuestionnaries, parameter, session);
+                questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId));
+                activeQuestionnaries.remove(sessionId);
+                output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
 
-
-                switch (activeIntent) {
-
-
-                    case Constants.JONG3_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 6);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 6);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
-
-                    case Constants.JONG4_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 7);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 7);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
-
-                    case Constants.JONG5_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 8);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 8);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
-
-                    case Constants.JONG6_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidJong(parameter)) {
-                            outputContext = fillInformation(parameter, session, 9);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 9);
-                            output = Constants.NOT_VALID_JONG_ANSWER;
-                        }
-                        break;
-
-                    case Constants.UCLA1_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidUCLA(parameter)) {
-                            outputContext = fillInformation(parameter, session, 10);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 10);
-                            output = Constants.NOT_VALID_UCLA_ANSWER;
-                        }
-                        break;
-
-                    case Constants.UCLA2_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidUCLA(parameter)) {
-                            outputContext = fillInformation(parameter, session, 11);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 11);
-                            output = Constants.NOT_VALID_UCLA_ANSWER;
-                        }
-                        break;
-
-                    case Constants.UCLA3_INTENT:
-                        thereIsContext = true;
-                        if (Input.isValidUCLA(parameter)) {
-                            outputContext = fillInformation(parameter, session, 12);
-                            output = request.getQueryResult().getFulfillmentText();
-                        } else {
-                            outputContext = returnContext(session, 12);
-                            output = Constants.NOT_VALID_UCLA_ANSWER;
-                        }
-                        break;
-
-                    case Constants.USER_COMMENT_INTENT:
-                        parameter = request.getQueryResult().getQueryText();
-                        outputContext = fillInformation(parameter, session, 13);
-                        output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
-                        break;
-                }
-            } else {
+            } else {    // El usuario cancela la conversaión
                 thereIsEvent = true;
                 output = Constants.CANCEL_CONVERSATION_OUTPUT;
                 eventInput = sendToWelcomeIntent(session);
@@ -180,7 +100,7 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             // Output especial Google Asistant
             response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getText().setText(new ArrayList<>(Arrays.asList(output)));
 
-            // Output especial para Telegram / voz de Google Assistant
+            // Output especial para Telegram / VOZ de Google Assistant
             if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
@@ -198,113 +118,6 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             e.printStackTrace();
             return new ResponseEntity<Object>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    // typeOfInformation -> (1, sexo), (2, edad), (3, vive solo)
-    private GoogleCloudDialogflowV2Context fillInformation (String parameter, String session, int typeOfInformation) {
-        String sessionId = session.split("/")[4];
-        GoogleCloudDialogflowV2Context outputContext = new GoogleCloudDialogflowV2Context();
-        int lifespan = 1;
-        outputContext.setLifespanCount(lifespan);
-
-        switch (typeOfInformation) {
-
-            case 6: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val4");
-                    break;
-
-            case 7: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val5");
-                    break;
-
-            case 8: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val6");
-                    break;
-
-            case 9: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val7");
-                    break;
-
-            case 10: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val8");
-                    break;
-
-            case 11: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                    }
-
-                    outputContext.setName(session + "/contexts/val9");
-                    break;
-
-            case 12: if(activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-                        activeQuestionnaries.get(sessionId).calculateJongScore();
-                        activeQuestionnaries.get(sessionId).calculateUCLAScore();
-                        activeQuestionnaries.get(sessionId).createDiagnosis();
-                    }
-
-                    outputContext.setName(session + "/contexts/user_comment");
-                    break;
-
-            case 13: if (activeQuestionnaries.containsKey(sessionId)) {
-                        activeQuestionnaries.get(sessionId).setUserComments(parameter);
-                        activeQuestionnaries.get(sessionId).setTimestamp(System.currentTimeMillis());
-                        questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId));
-                        activeQuestionnaries.remove(sessionId);
-
-                        }
-                    break;
-        }
-
-        return outputContext;
-    }
-
-    private GoogleCloudDialogflowV2Context returnContext (String session, int typeOfInformation) {
-        GoogleCloudDialogflowV2Context outputContext = new GoogleCloudDialogflowV2Context();
-        int lifespan = 1;
-        outputContext.setLifespanCount(lifespan);
-
-        switch (typeOfInformation) {
-
-            case 6: outputContext.setName(session + "/contexts/val3");
-                    break;
-
-            case 7: outputContext.setName(session + "/contexts/val4");
-                    break;
-
-            case 8: outputContext.setName(session + "/contexts/val5");
-                    break;
-
-            case 9: outputContext.setName(session + "/contexts/val6");
-                    break;
-
-            case 10: outputContext.setName(session + "/contexts/val7");
-                    break;
-
-            case 11: outputContext.setName(session + "/contexts/val8");
-                    break;
-
-            case 12: outputContext.setName(session + "/contexts/val9");
-                    break;
-
-        }
-
-        return outputContext;
     }
 
     private GoogleCloudDialogflowV2EventInput sendToWelcomeIntent(String session) {
