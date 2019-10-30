@@ -15,7 +15,7 @@ public class Constants {
     public static final String UCLA3_INTENT = "UCLA 3";
     public static final String USER_COMMENT_INTENT = "Comentarios Usuario";
 
-    public static final String NOT_VALID_SEX_ANSWER = "Tienes que indicar un sexo válido (Hombre o Mujer)";
+    public static final String NOT_VALID_SEX_ANSWER = "Tienes que indicar un género válido (Masculino, Femenino, Otro o Prefiero no contestar)";
     public static final String NOT_VALID_AGE_ANSWER = "Tienes que indicar un número válido entre 18 y 105 (Ej: 67)";
     public static final String NOT_VALID_ALONE_ANSWER = "Tienes que indicar 'Sí' o 'No'";
     public static final String NOT_VALID_JONG_ANSWER = "Tu respuesta debe ser 'Sí', 'Más o menos' o 'No'";

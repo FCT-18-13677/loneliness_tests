@@ -104,6 +104,11 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
             }
 
+            // Suggestion chips
+            logger.info(response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getPlatform());
+            GoogleCloudDialogflowV2IntentMessageSuggestions s = request.getQueryResult().getFulfillmentMessages().get(request.getQueryResult().getFulfillmentMessages().size() - 1).getSuggestions();
+            response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).setSuggestions(s);
+
             if (thereIsContext)
                 response.setOutputContexts(new ArrayList<>(Arrays.asList(outputContext)));
             if (thereIsEvent)
