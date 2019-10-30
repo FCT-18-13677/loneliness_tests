@@ -84,13 +84,11 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             } else {    // El usuario cancela la conversaión
                 thereIsEvent = true;
                 output = Constants.CANCEL_CONVERSATION_OUTPUT;
+                activeQuestionnaries.remove(sessionId);
                 eventInput = sendToWelcomeIntent(session);
             }
 
-            logger.info("\n\nActive Questionnarie");
-            for (Map.Entry<String, Questionnarie> entry : activeQuestionnaries.entrySet()) {
-                logger.info(entry.getKey() + ": " + entry.getValue());
-            }
+            logger.info("\n\nActive Questionnaries: " + activeQuestionnaries.size());
 
             // Response
             response.setFulfillmentText(output);

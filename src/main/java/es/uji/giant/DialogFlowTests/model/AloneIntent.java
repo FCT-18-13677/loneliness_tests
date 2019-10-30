@@ -16,7 +16,7 @@ public class AloneIntent extends Intent {
 
     @Override
     public boolean isValidInput(String input) {
-        String[] validAnswers = {"si", "no", "sí"};
+        String[] validAnswers = {"si", "no", "sí", "prefiero no contestar"};
         return isValid(input, validAnswers);
     }
 
