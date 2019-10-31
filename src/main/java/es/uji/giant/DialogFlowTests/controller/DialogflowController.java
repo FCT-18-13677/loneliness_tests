@@ -1,6 +1,7 @@
 package es.uji.giant.DialogFlowTests.controller;
 
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.ArrayMap;
 import com.google.api.services.dialogflow.v2.model.*;
 import es.uji.giant.DialogFlowTests.listener.ClearMapListener;
 import es.uji.giant.DialogFlowTests.model.Intent;
@@ -60,10 +61,11 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
             String session = request.getSession();
             String sessionId = session.split("/")[4];
             logger.info("Active Session: " + session);
+            //logger.info(request.toPrettyString());
 
             Intent actualIntent = factory.getIntent(activeIntent);
 
-            if (!actualIntent.userWantsToCancel(parameter) && !activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // El usuario no quiere cancelar y no es el último intent...
+            if (actualIntent != null && !actualIntent.userWantsToCancel(parameter) && !activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // El usuario no quiere cancelar y no es el último intent...
                 thereIsContext = true;
                 if (actualIntent.isValidInput(parameter)) {
                     outputContext = actualIntent.fillInformation(activeQuestionnaries, parameter, session);
@@ -98,35 +100,42 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
                     response.setFulfillmentMessages(actualMessages);
                 }
 
-            } else if (activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // Último Intent
+            } else if (actualIntent != null && activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // Último Intent
                 parameter = request.getQueryResult().getQueryText();
                 actualIntent.fillInformation(activeQuestionnaries, parameter, session);
                 questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId));
                 activeQuestionnaries.remove(sessionId);
                 output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
 
-            } else {    // El usuario cancela la conversaión
+            } else if (actualIntent != null){    // El usuario cancela la conversaión
                 thereIsEvent = true;
                 output = Constants.CANCEL_CONVERSATION_OUTPUT;
                 activeQuestionnaries.remove(sessionId);
                 eventInput = sendToWelcomeIntent(session);
+            } else {
+                List<Object> a = (ArrayList)request.getOriginalDetectIntentRequest().getPayload().get("inputs");
+                List<Object> arguments = (ArrayList) ((ArrayMap) a.get(0)).get("arguments");
+                ArrayMap<String, String> map = (ArrayMap)arguments.get(0);
+                logger.info("Parametro pasado por URL: " + map.get("rawText"));
             }
 
-            logger.info("\n\nActive Questionnaries: " + activeQuestionnaries.size());
+            if (!activeIntent.equals("MyWelcomeIntent")) {
+                logger.info("\n\nActive Questionnaries: " + activeQuestionnaries.size());
 
-            // Response
-            response.setFulfillmentText(output);
+                // Response
+                response.setFulfillmentText(output);
 
-            // Output especial para Telegram / VOZ de Google Assistant
-            if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
-                response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
-                response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
+                // Output especial para Telegram / VOZ de Google Assistant
+                if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
+                    response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
+                    response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
+                }
+
+                if (thereIsContext)
+                    response.setOutputContexts(new ArrayList<>(Arrays.asList(outputContext)));
+                if (thereIsEvent)
+                    response.setFollowupEventInput(eventInput);
             }
-
-            if (thereIsContext)
-                response.setOutputContexts(new ArrayList<>(Arrays.asList(outputContext)));
-            if (thereIsEvent)
-                response.setFollowupEventInput(eventInput);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 
