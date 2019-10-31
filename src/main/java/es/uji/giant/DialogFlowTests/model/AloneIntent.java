@@ -1,8 +1,13 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageSuggestion;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageSuggestions;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AloneIntent extends Intent {
@@ -34,6 +39,32 @@ public class AloneIntent extends Intent {
     public GoogleCloudDialogflowV2Context returnContext(String session) {
         outputContext.setName(session + "/contexts/solo");
         return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        GoogleCloudDialogflowV2IntentMessage message = new GoogleCloudDialogflowV2IntentMessage();
+        message.setPlatform("ACTIONS_ON_GOOGLE");
+        GoogleCloudDialogflowV2IntentMessageSuggestions suggestions = new GoogleCloudDialogflowV2IntentMessageSuggestions();
+
+        GoogleCloudDialogflowV2IntentMessageSuggestion s1 = new GoogleCloudDialogflowV2IntentMessageSuggestion();
+        s1.put("title", "Sí");
+
+        GoogleCloudDialogflowV2IntentMessageSuggestion s2 = new GoogleCloudDialogflowV2IntentMessageSuggestion();
+        s2.put("title", "No");
+
+        GoogleCloudDialogflowV2IntentMessageSuggestion s3 = new GoogleCloudDialogflowV2IntentMessageSuggestion();
+        s3.put("title", "Prefiero no contestar");
+
+        List<GoogleCloudDialogflowV2IntentMessageSuggestion> suggestionList = new ArrayList<>();
+        suggestionList.add(s1);
+        suggestionList.add(s2);
+        suggestionList.add(s3);
+        suggestions.setSuggestions(suggestionList);
+
+        message.setSuggestions(suggestions);
+
+        return message;
     }
 
     @Override

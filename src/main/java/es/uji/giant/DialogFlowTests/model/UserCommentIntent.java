@@ -1,6 +1,7 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
 
 import java.util.Map;
 
@@ -32,6 +33,11 @@ public class UserCommentIntent extends Intent {
     public GoogleCloudDialogflowV2Context returnContext(String session) {
         outputContext.setName(session + "/contexts/user_comment");
         return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        return null;
     }
 
     @Override

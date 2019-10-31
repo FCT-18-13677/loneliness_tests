@@ -1,6 +1,7 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 
 import java.util.Map;
@@ -37,6 +38,11 @@ public class UCLA3Intent extends Intent {
     public GoogleCloudDialogflowV2Context returnContext(String session) {
         outputContext.setName(session + "/contexts/val9");
         return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        return generateUCLAFulfillment();
     }
 
     @Override

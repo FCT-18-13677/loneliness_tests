@@ -1,8 +1,13 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageSuggestion;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageSuggestions;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AgeIntent extends Intent {
@@ -46,6 +51,24 @@ public class AgeIntent extends Intent {
     public GoogleCloudDialogflowV2Context returnContext(String session) {
         outputContext.setName(session + "/contexts/age");
         return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        GoogleCloudDialogflowV2IntentMessage message = new GoogleCloudDialogflowV2IntentMessage();
+        message.setPlatform("ACTIONS_ON_GOOGLE");
+        GoogleCloudDialogflowV2IntentMessageSuggestions suggestions = new GoogleCloudDialogflowV2IntentMessageSuggestions();
+
+        GoogleCloudDialogflowV2IntentMessageSuggestion s = new GoogleCloudDialogflowV2IntentMessageSuggestion();
+        s.put("title", "Prefiero no contestar");
+
+        List<GoogleCloudDialogflowV2IntentMessageSuggestion> suggestionList = new ArrayList<>();
+        suggestionList.add(s);
+        suggestions.setSuggestions(suggestionList);
+
+        message.setSuggestions(suggestions);
+
+        return message;
     }
 
     @Override

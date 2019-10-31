@@ -1,6 +1,7 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Context;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 
 import java.util.Map;
@@ -34,6 +35,11 @@ public class Jong5Intent extends Intent {
     public GoogleCloudDialogflowV2Context returnContext(String session) {
         outputContext.setName(session + "/contexts/val5");
         return outputContext;
+    }
+
+    @Override
+    public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        return generateJongFulfillment();
     }
 
     @Override

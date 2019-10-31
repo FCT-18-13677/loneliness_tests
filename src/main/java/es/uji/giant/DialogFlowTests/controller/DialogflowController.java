@@ -28,19 +28,18 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
     private Map<String, Questionnarie> activeQuestionnaries;
     private QuestionnarieDao questionnarieDao;
     private IntentFactory factory;
-    private ClearActiveQuestionnarieService service;
 
     @Autowired
     public DialogflowController(QuestionnarieDao questionnarieDao, ClearActiveQuestionnarieService service) {
         this.questionnarieDao = questionnarieDao;
         factory = new IntentFactory();
-        this.service = service;
         service.setListener(this);
         activeQuestionnaries = new HashMap<>();
     }
 
     @PostMapping("/dialogflow")
     public ResponseEntity<?> dialogflowWebhook(@RequestBody String requestStr, HttpServletRequest servletRequest) {
+
         try {
             // Read request and create response
             GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();
@@ -69,9 +68,34 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
                 if (actualIntent.isValidInput(parameter)) {
                     outputContext = actualIntent.fillInformation(activeQuestionnaries, parameter, session);
                     output = request.getQueryResult().getFulfillmentText();
+
+                    response.setFulfillmentMessages(request.getQueryResult().getFulfillmentMessages());
+                    // Output especial Google Asistant
+                    response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getText().setText(new ArrayList<>(Arrays.asList(output)));
+
                 } else {
                     outputContext = actualIntent.returnContext(session);
                     output = actualIntent.getWrongOutput();
+                    GoogleCloudDialogflowV2IntentMessage fulfillmentMessage = actualIntent.getReturnFulfillmentMessage();
+
+                    List<GoogleCloudDialogflowV2IntentMessage> actualMessages = request.getQueryResult().getFulfillmentMessages();
+
+                    // Borra "suggestions antiguas" para añadir las del return context
+                    for (GoogleCloudDialogflowV2IntentMessage message : actualMessages) {
+                        if (message.getSuggestions() != null) {
+                            actualMessages.remove(message);
+                        }
+                    }
+
+                    actualMessages.add(fulfillmentMessage);
+
+                    GoogleCloudDialogflowV2IntentMessage messageOutput = new GoogleCloudDialogflowV2IntentMessage();
+                    GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                    text.setText(new ArrayList<>(Arrays.asList(output)));
+
+                    messageOutput.setText(text);
+                    actualMessages.add(messageOutput);
+                    response.setFulfillmentMessages(actualMessages);
                 }
 
             } else if (activeIntent.equals(Constants.USER_COMMENT_INTENT)) { // Último Intent
@@ -92,22 +116,12 @@ public class DialogflowController extends HttpServlet implements ClearMapListene
 
             // Response
             response.setFulfillmentText(output);
-            // Esta línea, entre otras cosas, añade las "Suggestion Chips de Google") y añade el output (si no se ñade de esta forma no es suficiente con la
-            // línea anterior.
-            response.setFulfillmentMessages(request.getQueryResult().getFulfillmentMessages());
-            // Output especial Google Asistant
-            response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getText().setText(new ArrayList<>(Arrays.asList(output)));
 
             // Output especial para Telegram / VOZ de Google Assistant
             if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
                 response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
             }
-
-            // Suggestion chips
-            logger.info(response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).getPlatform());
-            GoogleCloudDialogflowV2IntentMessageSuggestions s = request.getQueryResult().getFulfillmentMessages().get(request.getQueryResult().getFulfillmentMessages().size() - 1).getSuggestions();
-            response.getFulfillmentMessages().get(response.getFulfillmentMessages().size() - 1).setSuggestions(s);
 
             if (thereIsContext)
                 response.setOutputContexts(new ArrayList<>(Arrays.asList(outputContext)));
