@@ -1,11 +1,10 @@
 package es.uji.giant.DialogFlowTests.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class Questionnarie {
+    private String code;
     private String sex;
     private int age;
     private boolean liveAlone;
@@ -101,10 +100,19 @@ public class Questionnarie {
         this.diagnosis = string;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     @Override
     public String toString() {
         return "Questionnarie{" +
-                "sex='" + sex + '\'' +
+                "code='" + code + '\'' +
+                ", sex='" + sex + '\'' +
                 ", age=" + age +
                 ", liveAlone=" + liveAlone +
                 ", timestamp=" + timestamp +

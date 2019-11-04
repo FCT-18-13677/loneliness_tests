@@ -3,6 +3,7 @@ package es.uji.giant.DialogFlowTests.model;
 import es.uji.giant.DialogFlowTests.utils.Constants;
 
 public class IntentFactory {
+    private WelcomeIntent welcomeIntent;
     private SexIntent sexIntent;
     private AgeIntent ageIntent;
     private AloneIntent aloneIntent;
@@ -18,6 +19,7 @@ public class IntentFactory {
     private UserCommentIntent userCommentIntent;
 
     public IntentFactory () {
+        welcomeIntent = new WelcomeIntent();
         sexIntent = new SexIntent();
         ageIntent = new AgeIntent();
         aloneIntent = new AloneIntent();
@@ -35,6 +37,7 @@ public class IntentFactory {
 
     public Intent getIntent(String activeIntent) {
         switch (activeIntent) {
+            case Constants.WELCOME_INTENT:  return welcomeIntent;
             case Constants.SEX_INTENT:      return sexIntent;
             case Constants.AGE_INTENT:      return ageIntent;
             case Constants.ALONE_INTENT:    return aloneIntent;
