@@ -16,12 +16,12 @@ public class Constants {
     public static final String UCLA3_INTENT = "UCLA 3";
     public static final String USER_COMMENT_INTENT = "Comentarios Usuario";
 
-    public static final String NOT_VALID_SEX_ANSWER = "Tienes que indicar un género válido (Masculino, Femenino, Otro o Prefiero no contestar)";
-    public static final String NOT_VALID_AGE_ANSWER = "Tienes que indicar un número válido entre 18 y 105 (Por ejemplo: 67). Si lo prefieres puedes indicar 'Prefiero no contestar'";
-    public static final String NOT_VALID_ALONE_ANSWER = "Tienes que indicar 'Sí','No' o 'Prefiero no contestar'";
-    public static final String NOT_VALID_JONG_ANSWER = "Tu respuesta debe ser 'Sí', 'Más o menos' o 'No'";
-    public static final String NOT_VALID_UCLA_ANSWER = "Tu respuesta debe ser 'Casi nunca', 'Algunas veces' o 'A menudo'";
-    public static final String CANCEL_CONVERSATION_OUTPUT = "Operación cancelada... ¿En que te puedo ayudar?";
+    public static final String NOT_VALID_SEX_ANSWER = "Tiene que indicar un género válido (Femenino, Masculino, Otro, Prefiero no contestar)";
+    public static final String NOT_VALID_AGE_ANSWER = "Tiene que indicar un número válido entre 18 y 105 (Por ejemplo: 67). Si lo prefiere puede indicar Prefiero no contestar";
+    public static final String NOT_VALID_ALONE_ANSWER = "Tiene que indicar Sí, No, Prefiero no contestar";
+    public static final String NOT_VALID_JONG_ANSWER = "Su respuesta debe ser Sí, No, Más o menos";
+    public static final String NOT_VALID_UCLA_ANSWER = "Su respuesta debe ser Casi nunca, Algunas veces, A menudo";
+    public static final String CANCEL_CONVERSATION_OUTPUT = "Operación cancelada... ¿En que le puedo ayudar?";
     public static final String FINISHED_CONVERSATION_OUTPUT_ANSWER = "Muchas gracias, ¡Hemos terminado!";
 
     public static final String ELASTICSEARCH_TEST_INDEX = "giant_tests";

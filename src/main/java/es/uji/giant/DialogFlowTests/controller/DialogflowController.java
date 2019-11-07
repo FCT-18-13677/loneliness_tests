@@ -167,4 +167,9 @@ public class DialogflowController extends HttpServlet {
         logger.info("El usuario ha cancelado la conversación");
         return eventInput;
     }
+
+    public void clearUndoneQuestionnaries() {
+        activeQuestionnaries.clear();
+        logger.info("All open questionnaries were removed.");
+    }
 }
