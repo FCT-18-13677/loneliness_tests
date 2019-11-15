@@ -82,18 +82,21 @@ public class DialogflowController extends HttpServlet {
                     } else {
                         outputContext = actualIntent.returnContext(session);
                         output = actualIntent.getWrongOutput();
-                        GoogleCloudDialogflowV2IntentMessage fulfillmentMessage = actualIntent.getReturnFulfillmentMessage();
 
-                        List<GoogleCloudDialogflowV2IntentMessage> actualMessages = restoreSuggestionChips(request, fulfillmentMessage, output);
-                        response.setFulfillmentMessages(actualMessages);
+                        if (!activeIntent.equals(Constants.CODE_INTENT)) {
+                            GoogleCloudDialogflowV2IntentMessage fulfillmentMessage = actualIntent.getReturnFulfillmentMessage();
+
+                            List<GoogleCloudDialogflowV2IntentMessage> actualMessages = restoreSuggestionChips(request, fulfillmentMessage, output);
+                            response.setFulfillmentMessages(actualMessages);
+                        }
                     }
 
                 // Si es el último intent (comentario final del usuario)
                 } else if (activeIntent.equals(Constants.USER_COMMENT_INTENT)) {
                     parameter = request.getQueryResult().getQueryText();
                     actualIntent.fillInformation(activeQuestionnaries, parameter, session);
-                    questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId));
-                    logger.info("Questimarie saved -> " + activeQuestionnaries.get(sessionId).toString());
+                    if (questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId)))
+                        logger.info("Questimarie saved -> " + activeQuestionnaries.get(sessionId).toString());
                     activeQuestionnaries.remove(sessionId);
                     output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
 
@@ -108,7 +111,7 @@ public class DialogflowController extends HttpServlet {
                 // Response
                 response.setFulfillmentText(output);
                 // Output especial para Telegram / VOZ de Google Assistant
-                if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
+                if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.CODE_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
                     response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
                     response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
                 }
@@ -118,8 +121,8 @@ public class DialogflowController extends HttpServlet {
                 if (thereIsEvent)
                     response.setFollowupEventInput(eventInput);
 
-            // Welcome Intent
-            } else {
+            // Welcome Intent (recoge código de una url
+            } /*else {
                 List<Object> a = (ArrayList)request.getOriginalDetectIntentRequest().getPayload().get("inputs");
                 List<Object> arguments = (ArrayList) ((ArrayMap) a.get(0)).get("arguments");
                 if (arguments != null) {
@@ -128,7 +131,7 @@ public class DialogflowController extends HttpServlet {
                     logger.info("Parametro pasado por URL: " + parameter);
                 }
                 actualIntent.fillInformation(activeQuestionnaries, parameter, session);
-            }
+            }*/
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 

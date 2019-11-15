@@ -2,6 +2,7 @@ package es.uji.giant.DialogFlowTests.utils;
 
 public class Constants {
     public static final String WELCOME_INTENT = "MyWelcomeIntent";
+    public static final String CODE_INTENT = "Pregunta Codigo";
     public static final String SEX_INTENT = "Pregunta Genero";
     public static final String AGE_INTENT = "Pregunta Edad";
     public static final String ALONE_INTENT = "Pregunta Solo";
@@ -16,6 +17,7 @@ public class Constants {
     public static final String UCLA3_INTENT = "UCLA 3";
     public static final String USER_COMMENT_INTENT = "Comentarios Usuario";
 
+    public static final String NOT_VALID_CODE_ANSWER = "Código incorrecto. Por favor, vuelva a introducir el código que se le ha facilitado.";
     public static final String NOT_VALID_SEX_ANSWER = "Tiene que indicar un género válido (Femenino, Masculino, Otro, Prefiero no contestar)";
     public static final String NOT_VALID_AGE_ANSWER = "Tiene que indicar un número válido entre 18 y 105 (Por ejemplo: 67). Si lo prefiere puede indicar Prefiero no contestar";
     public static final String NOT_VALID_ALONE_ANSWER = "Tiene que indicar Sí, No, Prefiero no contestar";
@@ -26,4 +28,6 @@ public class Constants {
 
     public static final String ELASTICSEARCH_TEST_INDEX = "giant_tests";
     public static final String ELASTICSEARCH_TEST_TYPE = "tests";
+
+    public static final String [] CODES = {"123456"};
 }

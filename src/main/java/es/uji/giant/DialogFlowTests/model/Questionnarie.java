@@ -10,8 +10,8 @@ public class Questionnarie {
     private boolean liveAlone;
     private long timestamp;
     private String userComments;
-    private int UCLAscore;
-    private int JongScore;
+    private int uclaScore;
+    private int jongScore;
     private String diagnosis;
     private List<String> answers;
 
@@ -64,20 +64,20 @@ public class Questionnarie {
         return liveAlone;
     }
 
-    public int getUCLAscore() {
-        return UCLAscore;
+    public int getUclaScore() {
+        return uclaScore;
     }
 
-    public void setUCLAscore(int UCLAscore) {
-        this.UCLAscore = UCLAscore;
+    public void setUclaScore(int uclaScore) {
+        this.uclaScore = uclaScore;
     }
 
     public int getJongScore() {
-        return JongScore;
+        return jongScore;
     }
 
     public void setJongScore(int jongScore) {
-        JongScore = jongScore;
+        this.jongScore = jongScore;
     }
 
     public void setAnswers(List<String> answers) {
@@ -117,8 +117,8 @@ public class Questionnarie {
                 ", liveAlone=" + liveAlone +
                 ", timestamp=" + timestamp +
                 ", userComments='" + userComments + '\'' +
-                ", UCLAscore=" + UCLAscore +
-                ", JongScore=" + JongScore +
+                ", uclaScore=" + uclaScore +
+                ", jongScore=" + jongScore +
                 ", diagnosis=" + diagnosis +
                 ", answers=" + answers +
                 '}';
@@ -137,7 +137,7 @@ public class Questionnarie {
             if (answer.equals("no") || answer.equals("mas o menos") || answer.equals("más o menos")) score += 1;
         }
 
-        JongScore = score;
+        jongScore = score;
     }
 
     public void calculateUCLAScore() {
@@ -157,14 +157,14 @@ public class Questionnarie {
             }
         }
 
-        UCLAscore = score;
+        uclaScore = score;
     }
 
     public void createDiagnosis() {
         boolean lonelinessUCLA = false;
 
-        if (UCLAscore >= 6) lonelinessUCLA = true;
-        diagnosis = "Jong -> " + JongScore + ", UCLA -> Soledad=" + lonelinessUCLA;
+        if (uclaScore >= 6) lonelinessUCLA = true;
+        diagnosis = "Jong -> " + jongScore + ", UCLA -> " + uclaScore + " Soledad=" + lonelinessUCLA;
     }
 
 }
