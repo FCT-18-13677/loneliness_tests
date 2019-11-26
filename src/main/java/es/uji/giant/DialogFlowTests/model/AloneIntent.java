@@ -31,7 +31,7 @@ public class AloneIntent extends Intent {
         if (activeQuestionnaries.containsKey(sessionId)) {
             activeQuestionnaries.get(sessionId).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
         }
-        outputContext.setName(session + "/contexts/val1");
+        outputContext.setName(session + "/contexts/city");
         return outputContext;
     }
 

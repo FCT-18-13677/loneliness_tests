@@ -32,6 +32,7 @@ public class SexIntent extends Intent {
             activeQuestionnaries.get(sessionId).setSex(parameter);
         } else {
             Questionnarie questionnarie = new Questionnarie();
+            questionnarie.setId(sessionId);
             questionnarie.setSex(parameter.toLowerCase());
             activeQuestionnaries.put(sessionId, questionnarie);
         }

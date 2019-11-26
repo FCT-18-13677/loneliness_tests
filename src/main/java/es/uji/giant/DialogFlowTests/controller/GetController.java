@@ -28,3 +28,9 @@ public class GetController {
         return questionnarieDao.getAllQuestionnaries();
     }
 }
+
+// Para borrar todos los datos de los tests:
+// curl -X DELETE "localhost:9200/giant_tests?pretty"
+
+// Para borrar los datos de un test en particular (con la id):
+// curl -X DELETE "localhost:9200/giant_tests/tests/ABwppHFTFSXHjnkTGl3_Nq1d33WblOowktzk-sfbdMBwQ4GkcVJJFAnVJNgYvNOvl_iHh5626oXaBTFxV_gp?pretty"

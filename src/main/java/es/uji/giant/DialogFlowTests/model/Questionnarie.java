@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Questionnarie {
-    private String code;
+    private String id;
+    private String city;
     private String sex;
     private int age;
     private boolean liveAlone;
@@ -17,6 +18,14 @@ public class Questionnarie {
 
     public Questionnarie() {
         answers = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSex() {
@@ -100,18 +109,19 @@ public class Questionnarie {
         this.diagnosis = string;
     }
 
-    public String getCode() {
-        return code;
+    public String getCity() {
+        return city;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     @Override
     public String toString() {
         return "Questionnarie{" +
-                "code='" + code + '\'' +
+                "id='" + id + '\'' +
+                "city='" + city + '\'' +
                 ", sex='" + sex + '\'' +
                 ", age=" + age +
                 ", liveAlone=" + liveAlone +

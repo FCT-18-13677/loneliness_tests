@@ -1,7 +1,6 @@
 package es.uji.giant.DialogFlowTests.controller;
 
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ArrayMap;
 import com.google.api.services.dialogflow.v2.model.*;
 import es.uji.giant.DialogFlowTests.model.Intent;
 import es.uji.giant.DialogFlowTests.model.IntentFactory;
@@ -83,11 +82,11 @@ public class DialogflowController extends HttpServlet {
                         outputContext = actualIntent.returnContext(session);
                         output = actualIntent.getWrongOutput();
 
-                        if (!activeIntent.equals(Constants.CODE_INTENT)) {
-                            GoogleCloudDialogflowV2IntentMessage fulfillmentMessage = actualIntent.getReturnFulfillmentMessage();
+                        if (!activeIntent.equals(Constants.CITY_INTENT)) {
+                        GoogleCloudDialogflowV2IntentMessage fulfillmentMessage = actualIntent.getReturnFulfillmentMessage();
 
-                            List<GoogleCloudDialogflowV2IntentMessage> actualMessages = restoreSuggestionChips(request, fulfillmentMessage, output);
-                            response.setFulfillmentMessages(actualMessages);
+                        List<GoogleCloudDialogflowV2IntentMessage> actualMessages = restoreSuggestionChips(request, fulfillmentMessage, output);
+                        response.setFulfillmentMessages(actualMessages);
                         }
                     }
 
@@ -111,7 +110,7 @@ public class DialogflowController extends HttpServlet {
                 // Response
                 response.setFulfillmentText(output);
                 // Output especial para Telegram / VOZ de Google Assistant
-                if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.CODE_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
+                if (!activeIntent.equals(Constants.USER_COMMENT_INTENT) && !activeIntent.equals(Constants.CITY_INTENT) && !activeIntent.equals(Constants.UCLA3_INTENT)) {
                     response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setDisplayText(output);
                     response.getFulfillmentMessages().get(0).getSimpleResponses().getSimpleResponses().get(0).setTextToSpeech(output);
                 }

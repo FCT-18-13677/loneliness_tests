@@ -13,51 +13,66 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CodeIntent extends Intent {
+public class CityIntent extends Intent {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private GoogleCloudDialogflowV2Context outputContext;
 
-    CodeIntent () {
+    CityIntent() {
         outputContext = new GoogleCloudDialogflowV2Context();
         outputContext.setLifespanCount(1);
     }
 
     @Override
     public boolean isValidInput(String input) {
-        List<String> codes = Arrays.asList(Constants.CODES);
-        return codes.contains(input);
+        List<String> codes = Arrays.asList(Constants.CITIES);
+        codes.replaceAll(String::toLowerCase);
+        return codes.contains(input.toLowerCase());
     }
 
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
         if (activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).setCode(parameter);
+            activeQuestionnaries.get(sessionId).setCity(parameter);
         } else {
             Questionnarie questionnarie = new Questionnarie();
-            questionnarie.setCode(parameter);
+            questionnarie.setCity(parameter);
             activeQuestionnaries.put(sessionId, questionnarie);
         }
-        outputContext.setName(session + "/contexts/sex");
+        outputContext.setName(session + "/contexts/val1");
         return outputContext;
     }
 
     @Override
     public GoogleCloudDialogflowV2Context returnContext(String session) {
-        outputContext.setName(session + "/contexts/code");
+        outputContext.setName(session + "/contexts/city");
         return outputContext;
     }
 
     @Override
     public GoogleCloudDialogflowV2IntentMessage getReturnFulfillmentMessage() {
+        /*GoogleCloudDialogflowV2IntentMessage message = new GoogleCloudDialogflowV2IntentMessage();
+        message.setPlatform("ACTIONS_ON_GOOGLE");
+        return message;*/
         GoogleCloudDialogflowV2IntentMessage message = new GoogleCloudDialogflowV2IntentMessage();
         message.setPlatform("ACTIONS_ON_GOOGLE");
+        GoogleCloudDialogflowV2IntentMessageSuggestions suggestions = new GoogleCloudDialogflowV2IntentMessageSuggestions();
+
+        GoogleCloudDialogflowV2IntentMessageSuggestion s = new GoogleCloudDialogflowV2IntentMessageSuggestion();
+        s.put("title", "Prefiero no contestar");
+
+        List<GoogleCloudDialogflowV2IntentMessageSuggestion> suggestionList = new ArrayList<>();
+        suggestionList.add(s);
+        suggestions.setSuggestions(suggestionList);
+
+        message.setSuggestions(suggestions);
+
         return message;
     }
 
     @Override
     public String getWrongOutput() {
-        return Constants.NOT_VALID_CODE_ANSWER;
+        return Constants.NOT_VALID_CITY_ANSWER;
     }
 }

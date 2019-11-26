@@ -4,7 +4,7 @@ import es.uji.giant.DialogFlowTests.utils.Constants;
 
 public class IntentFactory {
     private WelcomeIntent welcomeIntent;
-    private CodeIntent codeIntent;
+    private CityIntent cityIntent;
     private SexIntent sexIntent;
     private AgeIntent ageIntent;
     private AloneIntent aloneIntent;
@@ -21,7 +21,7 @@ public class IntentFactory {
 
     public IntentFactory () {
         welcomeIntent = new WelcomeIntent();
-        codeIntent = new CodeIntent();
+        cityIntent = new CityIntent();
         sexIntent = new SexIntent();
         ageIntent = new AgeIntent();
         aloneIntent = new AloneIntent();
@@ -40,7 +40,7 @@ public class IntentFactory {
     public Intent getIntent(String activeIntent) {
         switch (activeIntent) {
             case Constants.WELCOME_INTENT:  return welcomeIntent;
-            case Constants.CODE_INTENT:     return codeIntent;
+            case Constants.CITY_INTENT:     return cityIntent;
             case Constants.SEX_INTENT:      return sexIntent;
             case Constants.AGE_INTENT:      return ageIntent;
             case Constants.ALONE_INTENT:    return aloneIntent;

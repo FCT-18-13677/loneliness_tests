@@ -23,10 +23,10 @@ public class WelcomeIntent extends Intent {
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
         if (activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).setCode(parameter);
+            activeQuestionnaries.get(sessionId).setCity(parameter);
         } else {
             Questionnarie questionnarie = new Questionnarie();
-            questionnarie.setCode(parameter);
+            questionnarie.setCity(parameter);
             activeQuestionnaries.put(sessionId, questionnarie);
         }
         outputContext.setName(session + "/contexts/sex");
