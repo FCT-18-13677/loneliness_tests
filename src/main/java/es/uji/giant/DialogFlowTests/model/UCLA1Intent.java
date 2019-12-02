@@ -24,8 +24,8 @@ public class UCLA1Intent extends Intent {
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
-        if (activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
+        if (activeQuestionnaries.containsKey(session)) {
+            activeQuestionnaries.get(session).addAnswer(parameter.toLowerCase());
         }
         outputContext.setName(session + "/contexts/val8");
         return outputContext;

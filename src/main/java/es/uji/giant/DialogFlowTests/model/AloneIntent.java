@@ -28,8 +28,8 @@ public class AloneIntent extends Intent {
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
-        if (activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
+        if (activeQuestionnaries.containsKey(session)) {
+            activeQuestionnaries.get(session).setLiveAlone(parameter.toLowerCase().equals("si") || parameter.toLowerCase().equals("sí"));
         }
         outputContext.setName(session + "/contexts/city");
         return outputContext;

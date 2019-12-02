@@ -37,10 +37,10 @@ public class AgeIntent extends Intent {
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
-        if (activeQuestionnaries.containsKey(sessionId)) {
+        if (activeQuestionnaries.containsKey(session)) {
             // Guarda la edad. Si el usuario no lo ha especificado, la edad será "0".
             if (!parameter.toLowerCase().equals("prefiero no contestar")) {
-                activeQuestionnaries.get(sessionId).setAge(Integer.valueOf(parameter));
+                activeQuestionnaries.get(session).setAge(Integer.valueOf(parameter));
             }
         }
         outputContext.setName(session + "/contexts/solo");

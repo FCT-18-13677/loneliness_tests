@@ -22,9 +22,9 @@ public class UserCommentIntent extends Intent {
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
-        if (activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).setUserComments(parameter);
-            activeQuestionnaries.get(sessionId).setTimestamp(System.currentTimeMillis());
+        if (activeQuestionnaries.containsKey(session)) {
+            activeQuestionnaries.get(session).setUserComments(parameter);
+            activeQuestionnaries.get(session).setTimestamp(System.currentTimeMillis());
         }
         return null;
     }

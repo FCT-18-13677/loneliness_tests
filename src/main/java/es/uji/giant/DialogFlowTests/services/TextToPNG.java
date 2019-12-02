@@ -1,27 +1,32 @@
 package es.uji.giant.DialogFlowTests.services;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import es.uji.giant.DialogFlowTests.model.Questionnarie;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextToPNG {
 
     private static String[] strings;
 
     TextToPNG() {
-        strings = new String[10];
-        strings[0] = "Me encunetro muy bien";
-        strings[1] = "Me he comprado una bicicleta para poder ir a la playa en verano";
-        strings[2] = "La última película de los vengadores está muy chula";
-        strings[3] = "Everyone was busy, so I went to the movie alone.";
-        strings[4] = "Malls are great places to shop; I can find everything I need under one roof.";
-        strings[5] = "Should we start class now, or should we wait for everyone to get here?";
-        strings[6] = "Two seats were vacant. One day in my life I go to my uncle's field to get some oranges in order to give my children a nice meal. Lamao";
-        strings[7] = "Yeah, I think it's a good environment for learning English.";
-        strings[8] = "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.";
-        strings[9] = "How was the math test?";
+        List<Questionnarie> questionnaries = getQuestionnariesFromREST();
+        strings = new String[questionnaries.size()];
+
+        for (int i = 0; i < questionnaries.size(); i++)
+            strings[i] = questionnaries.get(i).getUserComments();
 
         separateLines();
     }
@@ -93,6 +98,51 @@ public class TextToPNG {
                 maxWidthLine = s;
         }
         return maxWidthLine;
+    }
+
+    public static java.util.List<Questionnarie> getQuestionnariesFromREST() {
+        try {
+            URL urlForGetRequest = new URL("https://inti.init.uji.es:8463/getQuestionnaries");
+
+            String readLine = null;
+
+            HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
+
+            conection.setRequestMethod("GET");
+
+            //conection.setRequestProperty("userId", "a1bcdef"); // set userId its a sample here
+
+            int responseCode = conection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                BufferedReader in = new BufferedReader(
+
+                        new InputStreamReader(conection.getInputStream()));
+
+                StringBuffer response = new StringBuffer();
+
+                while ((readLine = in .readLine()) != null) {
+
+                    response.append(readLine);
+
+                } in .close();
+
+                Type listType = new TypeToken<ArrayList<Questionnarie>>(){}.getType();
+                List<Questionnarie> questionnaries = new Gson().fromJson(response.toString(), listType);
+
+                return questionnaries;
+
+            } else {
+
+                System.out.println("GET NOT WORKED");
+                System.out.println(responseCode);
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void main(String[] args) {

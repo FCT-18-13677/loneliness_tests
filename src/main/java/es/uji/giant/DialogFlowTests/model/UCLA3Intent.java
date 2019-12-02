@@ -24,11 +24,11 @@ public class UCLA3Intent extends Intent {
     @Override
     public GoogleCloudDialogflowV2Context fillInformation(Map<String, Questionnarie> activeQuestionnaries, String parameter, String session) {
         String sessionId = session.split("/")[4];
-        if(activeQuestionnaries.containsKey(sessionId)) {
-            activeQuestionnaries.get(sessionId).addAnswer(parameter.toLowerCase());
-            activeQuestionnaries.get(sessionId).calculateJongScore();
-            activeQuestionnaries.get(sessionId).calculateUCLAScore();
-            activeQuestionnaries.get(sessionId).createDiagnosis();
+        if(activeQuestionnaries.containsKey(session)) {
+            activeQuestionnaries.get(session).addAnswer(parameter.toLowerCase());
+            activeQuestionnaries.get(session).calculateJongScore();
+            activeQuestionnaries.get(session).calculateUCLAScore();
+            activeQuestionnaries.get(session).createDiagnosis();
         }
         outputContext.setName(session + "/contexts/user_comment");
         return outputContext;

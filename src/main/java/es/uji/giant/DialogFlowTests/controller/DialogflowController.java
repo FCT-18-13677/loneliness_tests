@@ -94,16 +94,16 @@ public class DialogflowController extends HttpServlet {
                 } else if (activeIntent.equals(Constants.USER_COMMENT_INTENT)) {
                     parameter = request.getQueryResult().getQueryText();
                     actualIntent.fillInformation(activeQuestionnaries, parameter, session);
-                    if (questionnarieDao.insertQuestionnarie(sessionId, activeQuestionnaries.get(sessionId)))
-                        logger.info("Questimarie saved -> " + activeQuestionnaries.get(sessionId).toString());
-                    activeQuestionnaries.remove(sessionId);
+                    if (questionnarieDao.insertQuestionnarie(session, activeQuestionnaries.get(session)))
+                        logger.info("Questimarie saved -> " + activeQuestionnaries.get(session).toString());
+                    activeQuestionnaries.remove(session);
                     output = Constants.FINISHED_CONVERSATION_OUTPUT_ANSWER;
 
                 // El usuario cancela la conversaión
                 } else {
                     thereIsEvent = true;
                     output = Constants.CANCEL_CONVERSATION_OUTPUT;
-                    activeQuestionnaries.remove(sessionId);
+                    activeQuestionnaries.remove(session);
                     eventInput = sendToWelcomeIntent(session);
                 }
 
@@ -164,8 +164,8 @@ public class DialogflowController extends HttpServlet {
         String sessionId = session.split("/")[4];
         GoogleCloudDialogflowV2EventInput eventInput = new GoogleCloudDialogflowV2EventInput();
         eventInput.setName("Welcome");
-        activeQuestionnaries.remove(sessionId);
-        logger.info("Sesión a borrar -> " + sessionId);
+        activeQuestionnaries.remove(session);
+        logger.info("Sesión a borrar -> " + session);
         logger.info("El usuario ha cancelado la conversación");
         return eventInput;
     }
