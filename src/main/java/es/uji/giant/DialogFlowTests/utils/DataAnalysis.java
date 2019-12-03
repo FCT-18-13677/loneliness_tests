@@ -34,39 +34,69 @@ public class DataAnalysis {
         System.out.println("Hay " + cities.size() + " ciudades no repetidas\n");
 
 
-
-        //List<String[]> data = getStringArrayList(questionnaries);
         // ELK to CSV
-        //CSV csv = new CSV();
-        //csv.createCSV(data);
-        //TODO CSV
+        generateCSV(questionnaries);
     }
 
-    private static List<String[]> getStringArrayList(List<Questionnarie> questionnaries) {
+    private static void generateCSV(List<Questionnarie> questionnaries) {
         List<String[]> result = new ArrayList<>();
 
+        result.add(new String[]{"GÉNERO", "EDAD", "VIVE SOLO", "CIUDAD", "J1", "J2", "J3", "J4", "J5", "J6", "U1", "U2", "U3", "COMENTARIOS"});
         for (Questionnarie questionnarie : questionnaries) {
-            String[] row = new String[16];
+            String[] row = new String[14];
             row[0] = questionnarie.getSex();
             row[1] = String.valueOf(questionnarie.getAge());
-            row[2] = String.valueOf(questionnarie.isLivingAlone());
+            row[2] = questionnarie.isLivingAlone() ? "Sí" : "No";
             row[3] = questionnarie.getCity();
             for (int i = 0; i < 9; i++) {
                 row[i + 4] = questionnarie.getAnswers().get(i);
-                row[i + 4] = getNumericValueForAnswer(questionnarie.getAnswers().get(i));
+                row[i + 4] = getNumericValueForAnswer(questionnarie.getAnswers().get(i), i);
             }
-            row[13] = String.valueOf(questionnarie.getUclaScore());
-            row[14] = String.valueOf(questionnarie.getJongScore());
-            row[15] = questionnarie.getUserComments();
+            //row[13] = String.valueOf(questionnarie.getJongScore());
+            //row[14] = String.valueOf(questionnarie.getUclaScore());
+            row[13] = questionnarie.getUserComments();
             result.add(row);
         }
 
-        return result;
+        CSV csv = new CSV();
+        csv.createCSV(result);
     }
 
-    private static String getNumericValueForAnswer(String s) {
+    private static String getNumericValueForAnswer(String answer, int index) {
+        String output = "";
+        switch (Utils.stripAccents(answer)) {
+            // Valores UCLA
+            case "casi nunca":
+                output = "1";
+                break;
+            case "algunas veces":
+                output = "2";
+                break;
+            case "a menudo":
+                output = "3";
+                break;
 
-        return null;
+            // Valores JONG
+            case "mas o menos":
+                output = "1";
+                break;
+            case "si":
+                if (index == 0)
+                    output = "1";
+                else
+                    output = "0";
+                break;
+            case "no":
+                if (index == 5)
+                    output = "1";
+                else
+                    output = "0";
+                break;
+            default:
+                System.out.println(answer);
+                output = "ERROR";
+        }
+        return output;
     }
 
 

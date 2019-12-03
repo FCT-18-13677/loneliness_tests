@@ -8,8 +8,10 @@ import java.util.stream.Stream;
 
 public class CSV {
 
+    public static final String fileName = "encuestas_chatbot_alumnos.csv";
+
     public void createCSV(List<String[]> data) {
-        File csvOutputFile = new File("csv.csv");
+        File csvOutputFile = new File(fileName);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             data.stream()
                     .map(this::convertToCSV)
